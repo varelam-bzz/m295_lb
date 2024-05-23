@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,7 +104,7 @@ public class GameController {
             return Response.status(Response.Status.OK).entity(true).build();
         }
 
-        throw new NotFoundException(STR."No game with id \{id} found.");
+        throw new NotFoundException(String.valueOf(false));
     }
 
     @GET
@@ -168,21 +169,24 @@ public class GameController {
         throw new NotFoundException(STR."No game(s) with from date \{releaseDateString} found.");
     }
 
-    private Response saveOrUpdate(Game game) {
-        Publisher publisher = game.getPublisher();
+    private void savePublisher(Game game, Publisher publisher) {
         String publisherName = publisher.getName();
-
         Optional<Publisher> existingPublisher = publisherRepository.findPublisherByName(publisherName);
         if (existingPublisher.isEmpty()) {
             try {
                 logger.info(STR."Creating publisher with name \{publisherName}");
                 publisherRepository.save(publisher);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw new InternalServerErrorException(e.getMessage());
             }
         } else {
             game.setPublisher(existingPublisher.get());
         }
+    }
+
+    private Response saveOrUpdate(Game game) {
+        Publisher publisher = game.getPublisher();
+        savePublisher(game, publisher);
 
         try {
             logger.info(STR."Inserting / updating game with id \{game.getId()}.");
@@ -202,6 +206,31 @@ public class GameController {
             return Response.status(Response.Status.CONFLICT).entity(game).build();
         }
         return saveOrUpdate(game);
+    }
+
+    @POST
+    @Path("/bulk")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"ADMIN"})
+    public Response bulk(@Valid List<Game> games) {
+        List<Game> nonDuplicateGames = new ArrayList<>();
+        for (Game game : games) {
+            Optional<Game> optionalGame = gameRepository.findGameByName(game.getName());
+            if (optionalGame.isPresent()) {
+                game.setId(optionalGame.get().getId());
+                logger.warn(STR."Game with name \{game.getName()} already exists.");
+                continue;
+            }
+            nonDuplicateGames.add(game);
+            savePublisher(game, game.getPublisher());
+        }
+
+        try {
+            return Response.status(Response.Status.OK)
+                    .entity(gameRepository.saveAll(nonDuplicateGames)).build();
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
     @PUT
