@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface IGameRepository extends JpaRepository<Game, Integer> {
     Optional<Game> findGameByName(String name);
-    Optional<List<Game>> findGamesByReleaseDate(LocalDate releaseDate);
+    List<Game> findGamesByReleaseDate(LocalDate releaseDate);
 }
