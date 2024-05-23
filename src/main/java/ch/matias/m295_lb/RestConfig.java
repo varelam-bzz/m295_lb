@@ -1,6 +1,7 @@
 package ch.matias.m295_lb;
 
-import ch.matias.m295_lb.services.TODOController;
+import ch.matias.m295_lb.services.DatabaseController;
+import ch.matias.m295_lb.services.GameController;
 import ch.matias.m295_lb.utils.exceptions.*;
 import ch.matias.m295_lb.utils.security.AuthenticationFilter;
 import jakarta.ws.rs.ApplicationPath;
@@ -16,7 +17,8 @@ public class RestConfig extends Application {
         return new HashSet<>(
                 Arrays.asList(
                         AuthenticationFilter.class,
-                        TODOController.class,
+                        GameController.class,
+                        DatabaseController.class,
                         NotFoundExceptionHandler.class,
                         ConstraintViolationExceptionHandler.class,
                         BadRequestExceptionHandler.class,
