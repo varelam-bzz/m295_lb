@@ -8,3 +8,7 @@ Regeln:
 If errors:
 
 - VM Options Tomcat: `--enable-preview`
+
+Assumptions for game:
+
+- A game name has to be unique

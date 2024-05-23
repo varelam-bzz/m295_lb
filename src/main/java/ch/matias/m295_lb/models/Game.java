@@ -1,5 +1,6 @@
 package ch.matias.m295_lb.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.PositiveOrZero;

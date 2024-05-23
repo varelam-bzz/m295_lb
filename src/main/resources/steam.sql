@@ -28,17 +28,17 @@ ENGINE = InnoDB;
 -- Table `steam`.`Game`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `steam`.`Game` (
-  `ID` INT NOT NULL,
+  `ID` INT NOT NULL AUTO_INCREMENT,
   `Name` VARCHAR(45) NOT NULL,
   `Release_Date` DATE NOT NULL,
   `Price` DECIMAL(10,2) NOT NULL,
   `Purchases` INT NOT NULL,
   `Released` TINYINT NOT NULL,
-  `PublisherID` INT NOT NULL,
+  `Publisher_ID` INT NOT NULL,
   PRIMARY KEY (`ID`),
-  INDEX `Publisher_idx` (`PublisherID` ASC) VISIBLE,
-  CONSTRAINT `PublisherID`
-    FOREIGN KEY (`PublisherID`)
+  INDEX `Publisher_idx` (`Publisher_ID` ASC) VISIBLE,
+  CONSTRAINT `Publisher_ID`
+    FOREIGN KEY (`Publisher_ID`)
     REFERENCES `steam`.`Publisher` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)

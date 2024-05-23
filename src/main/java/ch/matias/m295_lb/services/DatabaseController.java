@@ -6,6 +6,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +20,8 @@ import java.sql.SQLException;
 @Component
 @Path("/database")
 public class DatabaseController {
+    private final Logger logger = LogManager.getLogger(GameController.class);
+
     private final DataSource dataSource;
 
     @Autowired
@@ -31,6 +35,8 @@ public class DatabaseController {
     public Response createTables() {
         try {
             ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("steam.sql"));
+
+            logger.info("Tables created successfully.");
             return Response.status(Response.Status.OK).entity("Tables created successfully!").build();
         } catch (SQLException e) {
             throw new InternalServerErrorException(e.getMessage());

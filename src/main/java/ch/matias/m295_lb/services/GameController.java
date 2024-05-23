@@ -1,7 +1,9 @@
 package ch.matias.m295_lb.services;
 
 import ch.matias.m295_lb.models.Game;
+import ch.matias.m295_lb.models.Publisher;
 import ch.matias.m295_lb.repositories.IGameRepository;
+import ch.matias.m295_lb.repositories.IPublisherRepository;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
@@ -17,15 +19,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Path("/game")
+@Path("/games")
 public class GameController {
     private final Logger logger = LogManager.getLogger(GameController.class);
 
     private final IGameRepository gameRepository;
+    private final IPublisherRepository publisherRepository;
 
     @Autowired
-    public GameController(IGameRepository gameRepository) {
+    public GameController(IGameRepository gameRepository, IPublisherRepository publisherRepository) {
         this.gameRepository = gameRepository;
+        this.publisherRepository = publisherRepository;
     }
 
     @GET
@@ -33,8 +37,8 @@ public class GameController {
     @Produces(MediaType.TEXT_PLAIN)
     @PermitAll
     public Response ping() {
-        logger.info("Endpoint /game/ping is running...");
-        return Response.ok("Endpoint /game/ping is running...").build();
+        logger.info("Endpoint /games/ping is running...");
+        return Response.ok("Endpoint /games/ping is running...").build();
     }
 
     @GET
@@ -50,7 +54,7 @@ public class GameController {
         }
 
         if (games.isEmpty()) {
-            logger.info("No games found.");
+            logger.info("No games saved.");
             return Response.status(Response.Status.NO_CONTENT).entity("No games saved.").build();
         }
 
@@ -80,9 +84,20 @@ public class GameController {
     }
 
     private Response saveOrUpdate(Game game) {
-        /*if (game.getStartTime().isBefore(game.getEndTime())) {
-            throw new BadRequestException("Start date must be before end date.");
-        }*/
+        Publisher publisher = game.getPublisher();
+        String publisherName = publisher.getName();
+
+        Optional<Publisher> existingPublisher = publisherRepository.findPublisherByName(publisherName);
+        if (existingPublisher.isEmpty()) {
+            try {
+                logger.info(STR."Creating publisher with name \{publisherName}");
+                publisherRepository.save(publisher);
+            } catch(Exception e) {
+                throw new InternalServerErrorException(e.getMessage());
+            }
+        } else {
+            game.setPublisher(existingPublisher.get());
+        }
 
         try {
             logger.info(STR."Inserting / updating game with id \{game.getId()}.");
@@ -94,30 +109,30 @@ public class GameController {
     }
 
     @POST
-    @Path("/game")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"ADMIN"})
     public Response insert(@Valid Game game) {
-        if (gameRepository.findById(game.getId()).isPresent()) {
-            logger.warn(STR."Game with id \{game.getId()} already exists.");
+        if (gameRepository.findGameByName(game.getName()).isPresent()) {
+            logger.warn(STR."Game with name \{game.getName()} already exists.");
             return Response.status(Response.Status.CONFLICT).entity(game).build();
         }
         return saveOrUpdate(game);
     }
 
     @PUT
-    @Path("/game")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"ADMIN"})
     public Response update(@Valid Game game) {
-        if (gameRepository.findById(game.getId()).isPresent()) {
+        Optional<Game> existingGame = gameRepository.findGameByName(game.getName());
+        if (existingGame.isPresent()) {
+            game.setId(existingGame.get().getId());
             return saveOrUpdate(game);
         }
-        throw new NotFoundException(STR."Game with id \{game.getId()} doesn't exist.");
+        throw new NotFoundException(STR."Game with name \{game.getName()} doesn't exist.");
     }
 
     @DELETE
-    @Path("/game/{id}")
+    @Path("/{id}")
     @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed({"ADMIN"})
     public Response delete(@PathParam("id") @Valid Integer id) {
