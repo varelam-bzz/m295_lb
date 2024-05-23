@@ -154,19 +154,19 @@ public class GameController {
             throw new BadRequestException("Invalid date format, format should be yyyy-MM-dd");
         }
 
-        Optional<List<Game>> game;
+        List<Game> game;
         try {
             game = gameRepository.findGamesByReleaseDate(releaseDate);
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
         }
 
-        if (game.isPresent()) {
-            logger.info(STR."Found game(s) with date \{releaseDateString}");
-            return Response.status(Response.Status.OK).entity(game).build();
+        if (game.isEmpty()) {
+            throw new NotFoundException(STR."No game(s) with from date \{releaseDateString} found.");
         }
 
-        throw new NotFoundException(STR."No game(s) with from date \{releaseDateString} found.");
+        logger.info(STR."Found game(s) with date \{releaseDateString}");
+        return Response.status(Response.Status.OK).entity(game).build();
     }
 
     private void savePublisher(Game game, Publisher publisher) {
@@ -248,7 +248,7 @@ public class GameController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.TEXT_PLAIN)
-    @RolesAllowed({"ADMIN"})
+    @RolesAllowed({"ADMIN", "CLEANER"})
     public Response delete(@PathParam("id") @Valid Integer id) {
         try {
             if (gameRepository.findById(id).isPresent()) {
@@ -266,7 +266,7 @@ public class GameController {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @PermitAll
+    @RolesAllowed({"ADMIN", "CLEANER"})
     public Response deleteAll() {
         try {
             gameRepository.deleteAll();
