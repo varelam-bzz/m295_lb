@@ -41,6 +41,8 @@ anhand **verschiedener Attribute** wie Name und Release Date.
 | `/games`                      | ADMIN, CLEANER | Löschen     | DELETE       |
 | `/database/create`            | ADMIN          | Schreiben   | POST         |
 
+Die Rollen `ADMIN` und `CLEANER` haben beide das Passwort `1234`. Es wird *Basic Authorization* verwendet.
+
 ## Bemerkungen
 - Es wird angenommen, dass ein Spielname eindeutig ist.
 - Bei einem Fehler `Preview not enabled`, muss der *TomCat Server* mit der folgenden *VM-Option* gestartet werden: `--enable-preview`
