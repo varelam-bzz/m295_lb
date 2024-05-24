@@ -45,7 +45,7 @@ Die Rollen `ADMIN` und `CLEANER` haben beide das Passwort `1234`. Es wird *Basic
 
 ## Bemerkungen
 - Es wird angenommen, dass ein Spielname eindeutig ist.
-- Bei einem Fehler `Preview not enabled`, muss der *TomCat Server* mit der folgenden *VM-Option* gestartet werden: `--enable-preview`
+- Bei einem Fehler `Preview features are not enabled for ch/matias/m295_lb/services/GameController`, muss der *TomCat Server* mit der folgenden *VM-Option* gestartet werden: `--enable-preview`
 - Bei den Tests funktionieren Tests mit `id` nicht, da die `id` auf `auto_increment` gesetzt ist.
 
 Damit die Tests zu 100% funktionieren, kann man den Folgenden Skript in MySQL laufen lassen:
