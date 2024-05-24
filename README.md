@@ -25,7 +25,7 @@ anhand **verschiedener Attribute** wie Name und Release Date.
 - Anzahl Käufe des Spiels (`purchases`, *Integer*): Muss 0 oder Positiv sein.
 
 ## Berechtigungsmatrix
-| Endpoint                      | Rolle          | Access Type | HTTP-Methoden |
+| Endpoint                      | Rolle          | Zugriffstyp | HTTP-Methoden |
 |-------------------------------|----------------|-------------|---------------|
 | `/games/ping`                 | Alle           | Lesen       | GET           |
 | `/games`                      | Alle           | Lesen       | GET           |
