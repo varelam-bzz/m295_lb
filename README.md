@@ -25,20 +25,21 @@ anhand **verschiedener Attribute** wie Name und Release Date.
 - Anzahl Käufe des Spiels (`purchases`, *Integer*): Muss 0 oder Positiv sein.
 
 ## Berechtigungsmatrix
-| Endpoint                      | Role           | Access Type |
-|-------------------------------|----------------|-------------|
-| `/games/ping`                 | All            | Read        |
-| `/games`                      | All            | Read        |
-| `/games/count`                | All            | Read        |
-| `/games/exists/{id}`          | All            | Read        |
-| `/games/byId/{id}`            | All            | Read        |
-| `/games/byName/{name}`        | All            | Read        |
-| `/games/byReleaseDate/{date}` | All            | Read        |
-| `/games`                      | ADMIN          | Create      |
-| `/games/bulk`                 | ADMIN          | Create      |
-| `/games`                      | ADMIN          | Update      |
-| `/games/{id}`                 | ADMIN, CLEANER | Delete      |
-| `/games`                      | ADMIN, CLEANER | Delete      |
+| Endpoint                      | Rolle          | Access Type | HTTP-Methoden |
+|-------------------------------|----------------|-------------|---------------|
+| `/games/ping`                 | Alle           | Lesen       | GET           |
+| `/games`                      | Alle           | Lesen       | GET           |
+| `/games/count`                | Alle           | Lesen       | GET           |
+| `/games/exists/{id}`          | Alle           | Lesen       | GET           |
+| `/games/byId/{id}`            | Alle           | Lesen       | GET           |
+| `/games/byName/{name}`        | Alle           | Lesen       | GET           |
+| `/games/byReleaseDate/{date}` | Alle           | Lesen       | GET           |
+| `/games`                      | ADMIN          | Schreiben   | POST          |
+| `/games/bulk`                 | ADMIN          | Schreiben   | POST          |
+| `/games`                      | ADMIN          | Update      | PUT           |
+| `/games/{id}`                 | ADMIN, CLEANER | Löschen     | DELETE        |
+| `/games`                      | ADMIN, CLEANER | Löschen     | DELETE        |
+| `/database/create`            | ADMIN          | Schreiben   | POST          |
 
 ## Bemerkungen
 - Es wird angenommen, dass ein Spielname eindeutig ist.
