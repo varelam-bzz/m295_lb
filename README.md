@@ -53,6 +53,46 @@ DELETE FROM steam.publisher;
 ALTER table steam.game AUTO_INCREMENT = 1;
 ```
 
+JSON für PUT & POST von Games:
+```json
+{
+    "name": "Sekiro",
+    "releaseDate": "2019-03-25",
+    "price": 60,
+    "purchases": 10000000,
+    "released": true,
+    "publisher": {
+        "name": "FromSoftware"
+    }
+}
+```
+
+Bulk Import JSON:
+```json
+[
+    {
+        "name": "Elden Ring",
+        "releaseDate": "2022-02-25",
+        "price": 60,
+        "purchases": 23000000,
+        "released": true,
+        "publisher": {
+          "name": "FromSoftware"
+        }
+    },
+    {
+        "name": "Rocket League",
+        "releaseDate": "2015-07-07",
+        "price": 0,
+        "purchases": 5400000,
+        "released": true,
+        "publisher": {
+          "name": "Psyonix"
+        }
+    }
+]
+```
+
 ## OpenAPI Dokumentation der Services (Ressourcen)
 ```yaml
 openapi: "3.0.0"
