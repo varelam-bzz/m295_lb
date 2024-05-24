@@ -16,6 +16,7 @@ anhand **verschiedener Attribute** wie Name und Release Date.
 ![1. Screenshot der Testdurchführung](pictures/tests_1.png)
 ![2. Screenshot der Testdurchführung](pictures/tests_2.png)
 ![Testdurchführung Resultat](pictures/tests_result.png)
+
 *Bemerkung über Tests unter [Bemerkungen](#Bemerkungen)*
 
 ## Validierungsregeln
@@ -24,20 +25,20 @@ anhand **verschiedener Attribute** wie Name und Release Date.
 - Anzahl Käufe des Spiels (`purchases`, *Integer*): Muss 0 oder Positiv sein.
 
 ## Berechtigungsmatrix
-| Endpoint                      | Role           | Access Type   |
-|-------------------------------|----------------|---------------|
-| `/games/ping`                 | All            | Read          |
-| `/games`                      | All            | Read          |
-| `/games/count`                | All            | Read          |
-| `/games/exists/{id}`          | All            | Read          |
-| `/games/byId/{id}`            | All            | Read          |
-| `/games/byName/{name}`        | All            | Read          |
-| `/games/byReleaseDate/{date}` | All            | Read          |
-| `/games`                      | ADMIN          | Create/Update |
-| `/games/bulk`                 | ADMIN          | Create        |
-| `/games`                      | ADMIN          | Update        |
-| `/games/{id}`                 | ADMIN, CLEANER | Delete        |
-| `/games`                      | ADMIN, CLEANER | Delete        |
+| Endpoint                      | Role           | Access Type |
+|-------------------------------|----------------|-------------|
+| `/games/ping`                 | All            | Read        |
+| `/games`                      | All            | Read        |
+| `/games/count`                | All            | Read        |
+| `/games/exists/{id}`          | All            | Read        |
+| `/games/byId/{id}`            | All            | Read        |
+| `/games/byName/{name}`        | All            | Read        |
+| `/games/byReleaseDate/{date}` | All            | Read        |
+| `/games`                      | ADMIN          | Create      |
+| `/games/bulk`                 | ADMIN          | Create      |
+| `/games`                      | ADMIN          | Update      |
+| `/games/{id}`                 | ADMIN, CLEANER | Delete      |
+| `/games`                      | ADMIN, CLEANER | Delete      |
 
 ## Bemerkungen
 - Es wird angenommen, dass ein Spielname eindeutig ist.
@@ -446,4 +447,6 @@ components:
 [Matias Varela Cousillas](https://github.com/varelam-bzz)
 
 ## Zusammenfassung
-Diese Dokumentation 
+Es wurden alle Endpoints implementiert sowie auch getestet. Die Dokumentation enthält Anhänge über das ERD, das 
+UML-Klassendiagramm sowie auch die Testresultate. Zudem enthält sie auch noch eine OpenAPI YAML Dokumentation des 
+Services. Das Projekt war spannend und cool 😊
