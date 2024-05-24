@@ -19,7 +19,7 @@ USE `steam` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `steam`.`Publisher` (
   `ID` INT NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(45) NOT NULL,
+  `Name` VARCHAR(45) NOT NULL UNIQUE,
   PRIMARY KEY (`ID`))
 ENGINE = InnoDB;
 
@@ -29,7 +29,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `steam`.`Game` (
   `ID` INT NOT NULL AUTO_INCREMENT,
-  `Name` VARCHAR(45) NOT NULL,
+  `Name` VARCHAR(45) NOT NULL UNIQUE,
   `Release_Date` DATE NOT NULL,
   `Price` DECIMAL(10,2) NOT NULL,
   `Purchases` INT NOT NULL,
