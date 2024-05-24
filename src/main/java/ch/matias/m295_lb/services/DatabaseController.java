@@ -1,5 +1,6 @@
 package ch.matias.m295_lb.services;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -32,6 +33,7 @@ public class DatabaseController {
     @POST
     @Path("/create")
     @Produces(MediaType.TEXT_PLAIN)
+    @RolesAllowed({"ADMIN"})
     public Response createTables() {
         try {
             ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("steam.sql"));
