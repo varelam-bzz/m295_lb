@@ -265,7 +265,7 @@ public class GameController {
     }
 
     @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @RolesAllowed({"ADMIN", "CLEANER"})
     public Response deleteAll() {
         try {
