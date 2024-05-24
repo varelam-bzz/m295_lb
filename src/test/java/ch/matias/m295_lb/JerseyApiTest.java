@@ -92,6 +92,50 @@ public class JerseyApiTest {
 	}
 
 	@Test
+	public void getGamesCount_thenOk() throws IOException {
+		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/count");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_OK,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	@Order(4)
+	public void gameExistsById_thenOk() throws IOException {
+		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/exists/1");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_OK,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	public void gameExistsById_thenNotFound() throws IOException {
+		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/exists/999");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_NOT_FOUND,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	@Order(3)
 	public void getGameById_thenOk() throws IOException {
 		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/byId/1");
 		HttpResponse httpResponse = HttpClientBuilder
@@ -185,6 +229,20 @@ public class JerseyApiTest {
 	}
 
 	@Test
+	public void insertGameWithMaxAllowedLength_thenOk() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "{\"name\":\"8N#pQr2L!yVc6tFgS@Xe3hEwAsDfGzUxI*JkY9oP7l\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
+		makePost(request, json, HttpStatus.SC_OK);
+	}
+
+	@Test
+	public void insertGameWithId_thenOk() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "{\"id\": 1,\"name\":\"TestTest\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
+		makePost(request, json, HttpStatus.SC_OK);
+	}
+
+	@Test
 	public void insertGame_thenConflict() throws IOException {
 		HttpPost request = new HttpPost(SERVICE_URL);
 		String json = "{\"name\":\"Sekiro\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
@@ -213,6 +271,73 @@ public class JerseyApiTest {
 	}
 
 	@Test
+	public void insertGameWithInvalidReleaseDate_thenBadRequest() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "{\"name\":\"ASDSD\",\"releaseDate\":\"2019-03-2\",\"price\":360,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
+		makePost(request, json, HttpStatus.SC_BAD_REQUEST);
+	}
+
+	@Test
+	public void insertGameWithInvalidRole_thenUnauthorized() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "{\"name\":\"ASDSD\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
+		addAuthorizationHeader(request, "");
+		StringEntity entity = new StringEntity(json);
+		request.setEntity(entity);
+		request.setHeader("Content-Type", "application/json");
+
+		makeAssert(request, HttpStatus.SC_UNAUTHORIZED);
+	}
+
+	@Test
+	public void bulkInsertGame_thenOk() throws IOException {
+		HttpPost request = new HttpPost(STR."\{SERVICE_URL}/bulk");
+		String json = "[{\"name\":\"Game One\",\"releaseDate\":\"2020-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		makePost(request, json, HttpStatus.SC_OK);
+	}
+
+	@Test
+	public void bulkInsertGameWithId_thenOk() throws IOException {
+		HttpPost request = new HttpPost(STR."\{SERVICE_URL}/bulk");
+		String json = "[{\"id\":1,\"name\":\"Game One\",\"releaseDate\":\"2020-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"id\":1,\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		makePost(request, json, HttpStatus.SC_OK);
+	}
+
+	@Test
+	public void bulkInsertGameWithInvalidPurchases_thenBadRequest() throws IOException {
+		HttpPost request = new HttpPost(STR."\{SERVICE_URL}/bulk");
+		String json = "[{\"name\":\"Game One\",\"releaseDate\":\"2020-03-22\",\"price\":60,\"purchases\":-1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		makePost(request, json, HttpStatus.SC_BAD_REQUEST);
+	}
+
+	@Test
+	public void bulkInsertGameWithInvalidPrice_thenBadRequest() throws IOException {
+		HttpPost request = new HttpPost(STR."\{SERVICE_URL}/bulk");
+		String json = "[{\"name\":\"Game One\",\"releaseDate\":\"2020-03-22\",\"price\":360,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		makePost(request, json, HttpStatus.SC_BAD_REQUEST);
+	}
+
+	@Test
+	public void bulkInsertGameWithInvalidReleaseDate_thenBadRequest() throws IOException {
+		HttpPost request = new HttpPost(STR."\{SERVICE_URL}/bulk");
+		String json = "[{\"name\":\"Game One\",\"releaseDate\":\"2020-03-2\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		makePost(request, json, HttpStatus.SC_BAD_REQUEST);
+	}
+
+	@Test
+	public void bulkInsertGameWithInvalidRole_thenUnauthorized() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "[{\"name\":\"Game One\",\"releaseDate\":\"2020-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}},{\"name\":\"Elden Ring\",\"releaseDate\":\"2022-02-25\",\"price\":60,\"purchases\":2000000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}]";
+		addAuthorizationHeader(request, "");
+		StringEntity entity = new StringEntity(json);
+		request.setEntity(entity);
+		request.setHeader("Content-Type", "application/json");
+
+		makeAssert(request, HttpStatus.SC_UNAUTHORIZED);
+	}
+
+
+	@Test
 	public void updateGame_thenOk() throws IOException {
 		HttpPut request = new HttpPut(SERVICE_URL);
 		String json = "{\"name\":\"Sekiro\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":290000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
@@ -238,6 +363,18 @@ public class JerseyApiTest {
 		HttpPut request = new HttpPut(SERVICE_URL);
 		String json = "{\"name\":\"NonExistentGame\",\"releaseDate\":\"2019-03-22\",\"price\":360,\"purchases\":130000,\"released\":true,\"publisher\":{\"name\":\"NonExistentPublisher\"}}";
 		makePut(request, json, HttpStatus.SC_BAD_REQUEST);
+	}
+
+	@Test
+	public void updateGameWithInvalidRole_thenUnauthorized() throws IOException {
+		HttpPost request = new HttpPost(SERVICE_URL);
+		String json = "{\"name\":\"Sekiro\",\"releaseDate\":\"2019-03-22\",\"price\":60,\"purchases\":1300000,\"released\":true,\"publisher\":{\"name\":\"FromSoftware\"}}";
+		addAuthorizationHeader(request, "");
+		StringEntity entity = new StringEntity(json);
+		request.setEntity(entity);
+		request.setHeader("Content-Type", "application/json");
+
+		makeAssert(request, HttpStatus.SC_UNAUTHORIZED);
 	}
 
 	@Test
@@ -285,5 +422,33 @@ public class JerseyApiTest {
 		);
 	}
 
-	// TODO: tests with failed auth
+	@Test
+	public void deleteGameWithInvalidRole_thenUnauthorized() throws IOException {
+		HttpUriRequest request = new HttpDelete(STR."\{SERVICE_URL}/1");
+		addAuthorizationHeader(request, "");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_UNAUTHORIZED,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	public void deleteAllGamesWithInvalidRole_thenUnauthorized() throws IOException {
+		HttpUriRequest request = new HttpDelete(SERVICE_URL);
+		addAuthorizationHeader(request, "");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_UNAUTHORIZED,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
 }
