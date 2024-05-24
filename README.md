@@ -20,15 +20,23 @@ anhand verschiedener Attribute wie Name und Release Date.
 - Preis des Spiels ("price", BigDecimal): Nicht mehr als CHF 300.
 - Anzahl Käufe des Spiels ("purchases", Integer): Muss 0 oder Positiv sein.
 
-Assumptions for game:
-
-- A game name has to be unique
-
-
-Remark about test:
-
-- Doesn't work with id because of auto-increment
-- ![tests.png](pictures/tests.png)
+## Berechtigungsmatrix
+| Endpoint                      | Role           | Access Type   |
+|-------------------------------|----------------|---------------|
+| `/games/ping`                 | All            | Read          |
+| `/games`                      | All            | Read          |
+| `/games/count`                | All            | Read          |
+| `/games/exists/{id}`          | All            | Read          |
+| `/games/byId/{id}`            | All            | Read          |
+| `/games/byName/{name}`        | All            | Read          |
+| `/games/byReleaseDate/{date}` | All            | Read          |
+| `/games`                      | ADMIN          | Create/Update |
+| `/games/bulk`                 | ADMIN          | Create        |
+| `/games`                      | ADMIN          | Update        |
+| `/games/{id}`                 | ADMIN, CLEANER | Delete        |
+| `/games`                      | ADMIN, CLEANER | Delete        |
 
 ## Bemerkungen
-Bei einem Fehler `Preview not enabled`, muss der TomCat Server muss mit der folgenden VM-Option gestartet werden: `--enable-preview`
+- Bei einem Fehler `Preview not enabled`, muss der TomCat Server muss mit der folgenden VM-Option gestartet werden: `--enable-preview`
+- Bei den Tests funktionieren tests mit `id` nicht, da die `id` auf `auto_increment` gesetzt ist.
+- Es wird angenommen, dass ein Spielname eindeutig ist.
