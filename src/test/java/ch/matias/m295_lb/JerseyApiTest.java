@@ -135,6 +135,20 @@ public class JerseyApiTest {
 	}
 
 	@Test
+	public void gameExistsByInvalidId_thenNotFound() throws IOException {
+		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/exists/asdasd");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_NOT_FOUND,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
 	@Order(3)
 	public void getGameById_thenOk() throws IOException {
 		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/byId/1");
@@ -152,6 +166,20 @@ public class JerseyApiTest {
 	@Test
 	public void getGameById_thenNotFound() throws IOException {
 		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/byId/9999");
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_NOT_FOUND,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	public void getGameByInvalidId_thenNotFound() throws IOException {
+		HttpUriRequest request = new HttpGet(STR."\{SERVICE_URL}/byId/asdasd");
 		HttpResponse httpResponse = HttpClientBuilder
 				.create()
 				.build()
@@ -395,6 +423,21 @@ public class JerseyApiTest {
 	@Test
 	public void deleteGame_thenNotFound() throws IOException {
 		HttpUriRequest request = new HttpDelete(STR."\{SERVICE_URL}/9999");
+		addAuthorizationHeader(request, USERNAME_CLEANER);
+		HttpResponse httpResponse = HttpClientBuilder
+				.create()
+				.build()
+				.execute(request);
+
+		assertEquals(
+				HttpStatus.SC_NOT_FOUND,
+				httpResponse.getStatusLine().getStatusCode()
+		);
+	}
+
+	@Test
+	public void deleteGameInvalidId_thenNotFound() throws IOException {
+		HttpUriRequest request = new HttpDelete(STR."\{SERVICE_URL}/asdas");
 		addAuthorizationHeader(request, USERNAME_CLEANER);
 		HttpResponse httpResponse = HttpClientBuilder
 				.create()
