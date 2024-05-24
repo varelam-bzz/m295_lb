@@ -36,8 +36,21 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 return;
             }
             final String encodedUserPassword = authorization.get(0).replaceFirst(STR."\{AUTHENTICATION_SCHEME} ", "");
-            String usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword.getBytes()));
+            String usernameAndPassword;
+            try {
+                usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword.getBytes()));
+            } catch (IllegalArgumentException e) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Invalid authorization token").build());
+                return;
+            }
+
             final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
+            if (tokenizer.countTokens() != 2) {
+                requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                        .entity("Invalid authorization token").build());
+                return;
+            }
             final String username = tokenizer.nextToken();
             final String password = tokenizer.nextToken();
             if (method.isAnnotationPresent(RolesAllowed.class)) {
